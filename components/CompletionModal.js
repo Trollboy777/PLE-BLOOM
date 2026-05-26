@@ -48,7 +48,7 @@ export default function CompletionModal ({visible, onConfirm}) {
                             if (selected) onConfirm(selected)
                         }}
                     >
-                        <Text style={styles.buttonText}>Bevestigen</Text>
+                        <Text style={styles.buttonText}>Doorgaan -> Reflectie</Text>
                     </TouchableOpacity>
 
                 </View>

@@ -37,7 +37,7 @@ export default function TaskModal({visible, onConfirm}) {
                     <TouchableOpacity style={[styles.confirmButton, (!taskInput || !selectedTime) && styles.confirmButtonDisabled
                     ]} onPress={() => {
                         if (taskInput && selectedTime) {
-                            onConfirm({task: taskInput}, {expectedTime: selectedTime})
+                            onConfirm({task: taskInput, expectedTime: selectedTime})
                             console.log(taskInput, selectedTime)
                         }
                     }}>
