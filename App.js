@@ -4,7 +4,9 @@ import TaskModal from "./components/TaskModal";
 import {useEffect, useState} from "react";
 import CompletionModal from "./components/CompletionModal";
 import ReflectionModal from "./components/ReflectionModal";
-import {saveSession, getSessions, getDailyProgress, saveDailyProgress} from "./utills/SaveManager";
+import { saveSession, getDailyProgress, saveDailyProgress, getStreak, updateStreak, addXP, getTotalXP, clearSessions } from './utills/SaveManager'
+import { calculateXP } from "./utills/XpManager";
+import XPBar from "./components/XPBar";
 
 const FLOW = {
   LOADING: 'loading',
@@ -22,11 +24,17 @@ export default function App() {
   const [completionVisible, setCompletionVisible] = useState(false)
   const [reflectionVisible, setReflectionVisible] = useState(false)
   const [completionStatus, setCompletionStatus] = useState(null)
+  const [totalXP, setTotalXP] = useState(0)
+  const [streak, setStreak] = useState(0)
 
   useEffect(() => {
     const init = async () => {
       const progress = await getDailyProgress()
       console.log('Daily progress bij opstarten:', progress)
+      const XP = await getTotalXP()
+      const streakData = await getStreak()
+      setTotalXP(XP)
+      setStreak(streakData.count)
       if (!progress) {
         setFlow(FLOW.TASK)
         setModalVisible(true)
@@ -109,6 +117,8 @@ export default function App() {
         <Image source={require('./assets/fire.png')} style={styles.fire} />
       </View>
 
+      <XPBar totalXP={totalXP} streak={streak}/>
+
       {flow !== FLOW.LOADING && (
           <View style={styles.fabContainer}>
             <Text style={styles.fabLabel}>{fabLabel()}</Text>
@@ -134,20 +144,38 @@ export default function App() {
       </CompletionModal>
       <ReflectionModal visible={reflectionVisible}
                        completionStatus={completionStatus} onFinish={async (reflectionData) => {
-                         await saveSession({
-                           task: currentTask.task,
-                           expectedTime: currentTask.expectedTime,
-                           completionStatus: currentTask.completionStatus,
-                           reflection: reflectionData
-                             })
+        const streakData = await updateStreak()
+
+        const { xp} = calculateXP({
+          completionStatus: completionStatus,
+          expectedTime: currentTask.expectedTime,
+          reflection: reflectionData,
+          streak: streakData.count
+        })
+
+        const newTotalXP = await addXP(xp)
+
+        await saveSession({
+          task: currentTask.task,
+          expectedTime: currentTask.expectedTime,
+          completionStatus: completionStatus,
+          reflection: reflectionData,
+          xp: xp,
+        })
+
         await saveDailyProgress({
           step: 'done',
           task: currentTask,
-          completionStatus: completionStatus
+          completionStatus: completionStatus,
+          xp: xp,
+          totalXP: newTotalXP,
+          streak: streakData.count,
         })
-        console.log(`Reflectie data: ${reflectionData}`)
+
+        setTotalXP(newTotalXP)
+        setStreak(streakData.count)
+        console.log(`Verdiend: ${xp} XP | Totaal: ${newTotalXP} XP | Streak: ${streakData.count} dagen`)
         setReflectionVisible(false)
-        setTaskDone(true)
         setFlow(FLOW.DONE)
       }}>
 
@@ -271,6 +299,24 @@ const styles = StyleSheet.create({
   fabDone: {
     backgroundColor: '#ccc',
     borderColor: '#999',
+  },
+  debugButton: {
+    position: 'absolute',
+    top: 50,
+    right: 10,
+    backgroundColor: '#fff',
+    padding: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  debugButton2: {
+    position: 'absolute',
+    top: 100,
+    right: 10,
+    backgroundColor: '#ffcccc',
+    padding: 8,
+    borderRadius: 6,
+    borderWidth: 1,
   },
 
 });
