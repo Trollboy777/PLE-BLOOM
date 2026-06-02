@@ -7,6 +7,7 @@ import ReflectionModal from "./components/ReflectionModal";
 import { saveSession, getDailyProgress, saveDailyProgress, getStreak, updateStreak, addXP, getTotalXP, clearSessions } from './utills/SaveManager'
 import { calculateXP } from "./utills/XpManager";
 import XPBar from "./components/XPBar";
+import { getWorldState } from "./utills/WorldManager";
 
 const FLOW = {
   LOADING: 'loading',
@@ -72,117 +73,128 @@ export default function App() {
     if (flow === FLOW.TASK) return 'Taak Invoeren'
     return ''
   }
+  const world = getWorldState(totalXP)
 
   return (
-    <View style={styles.container}>
-      <View style={styles.leftTree}>
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-      </View>
+      <View style={styles.container}>
+        <View style={styles.leftTree}>
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+        </View>
 
-      <View style={styles.content}>
-        <Text style={styles.title}>PLE-Bloom</Text>
-      </View>
+        <View style={styles.content}>
+        </View>
 
-      <View style={styles.grassContainer}>
-        <Image source={require('./assets/grass-small.png')} />
-        <Image source={require('./assets/grass-small.png')} />
-        <Image source={require('./assets/grass-small.png')} />
-      </View>
+        <View style={styles.rightTree}>
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+          <Image source={world.treeAsset} />
+        </View>
 
-      <View style={styles.rightTree}>
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-        <Image source={require('./assets/tree-basic.png')} />
-      </View>
+        <View style={styles.grassContainer}>
+          <Image source={world.grassAsset} />
+          <Image source={world.grassAsset} />
+          <Image source={world.grassAsset} />
+        </View>
 
-      <Image source={require('./assets/pebble.png')} style={styles.pebble1} />
-      <Image source={require('./assets/pebble.png')} style={styles.pebble2} />
-      <Image source={require('./assets/pebble.png')} style={styles.pebble3} />
-      <Image source={require('./assets/pebble.png')} style={styles.pebble4} />
+        <Image source={world.pebbleAsset} style={styles.pebble1} />
+        <Image source={world.pebbleAsset} style={styles.pebble2} />
+        <Image source={world.pebbleAsset} style={styles.pebble3} />
+        <Image source={world.pebbleAsset} style={styles.pebble4} />
 
-      <View style={styles.firestoneContainer}>
-        <Image source={require('./assets/firestonegrid.png')} style={styles.firestoneGrid} />
-        <Image source={require('./assets/fire.png')} style={styles.fire} />
-      </View>
+        {world.showHouse1 && (
+            <Image source={require('./assets/house1.png')} style={styles.house1} />
+        )}
+        {world.showHouse2 && (
+            <Image source={require('./assets/house2.png')} style={styles.house2} />
+        )}
+        {world.showHouse3 && (
+            <Image source={require('./assets/house3.png')} style={styles.house3} />
+        )}
+        {world.showHouse4 && (
+            <Image source={require('./assets/house4.png')} style={styles.house4} />
+        )}
+        {world.showHouse5 && (
+            <Image source={require('./assets/house5.png')} style={styles.house5} />
+        )}
+
+        {world.showHuman1 && (
+            <Image source={require('./assets/human1.png')} style={styles.human1} />
+        )}
+        {world.showHuman2 && (
+            <Image source={require('./assets/human2.png')} style={styles.human2} />
+        )}
+
+        <View style={styles.firestoneContainer}>
+          <Image source={require('./assets/firestonegrid.png')} style={styles.firestoneGrid} />
+          <Image source={require('./assets/fire.png')} style={styles.fire} />
+        </View>
 
       <XPBar totalXP={totalXP} streak={streak}/>
 
-      {flow !== FLOW.LOADING && (
-          <View style={styles.fabContainer}>
-            <Text style={styles.fabLabel}>{fabLabel()}</Text>
-            <TouchableOpacity
-                style={[styles.fab, flow === FLOW.DONE && styles.fabDone]}
-                onPress={handleFabPress}
-            >
-              <Text style={styles.fabIcon}>✓</Text>
-            </TouchableOpacity>
-          </View>
-      )}
+        {flow !== FLOW.LOADING && (
+            <View style={styles.fabContainer}>
+              <Text style={styles.fabLabel}>{fabLabel()}</Text>
+              <TouchableOpacity
+                  style={[styles.fab, flow === FLOW.DONE && styles.fabDone]}
+                  onPress={handleFabPress}
+              >
+                <Text style={styles.fabIcon}>✓</Text>
+              </TouchableOpacity>
+            </View>
+        )}
 
-      <TaskModal visible={modalVisible} onConfirm={handleTaskConfirm}/>
+        <TaskModal visible={modalVisible} onConfirm={handleTaskConfirm} />
+        <CompletionModal visible={completionVisible} onConfirm={(result) => {
+          setCompletionStatus(result)
+          setCompletionVisible(false)
+          setReflectionVisible(true)
+          setFlow(FLOW.REFLECTION)
+        }} />
+        <ReflectionModal visible={reflectionVisible} completionStatus={completionStatus} onFinish={async (reflectionData) => {
+          const streakData = await updateStreak()
+          const { xp } = calculateXP({
+            completionStatus,
+            expectedTime: currentTask.expectedTime,
+            reflection: reflectionData,
+            streak: streakData.count,
+          })
+          const newTotalXP = await addXP(xp)
+          await saveSession({
+            task: currentTask.task,
+            expectedTime: currentTask.expectedTime,
+            completionStatus,
+            reflection: reflectionData,
+            xp,
+          })
+          await saveDailyProgress({
+            step: 'done',
+            task: currentTask,
+            completionStatus,
+            xp,
+            totalXP: newTotalXP,
+            streak: streakData.count,
+          })
+          setTotalXP(newTotalXP)
+          setStreak(streakData.count)
+          setReflectionVisible(false)
+          setFlow(FLOW.DONE)
+        }} />
 
-      <CompletionModal visible={completionVisible} onConfirm={(result)=> {
-        console.log(`Taak resultaat: ${result}`)
-        setCompletionStatus(result)
-        setCompletionVisible(false)
-        setReflectionVisible(true)
-        setFlow(FLOW.REFLECTION)
-      }}>
-
-      </CompletionModal>
-      <ReflectionModal visible={reflectionVisible}
-                       completionStatus={completionStatus} onFinish={async (reflectionData) => {
-        const streakData = await updateStreak()
-
-        const { xp} = calculateXP({
-          completionStatus: completionStatus,
-          expectedTime: currentTask.expectedTime,
-          reflection: reflectionData,
-          streak: streakData.count
-        })
-
-        const newTotalXP = await addXP(xp)
-
-        await saveSession({
-          task: currentTask.task,
-          expectedTime: currentTask.expectedTime,
-          completionStatus: completionStatus,
-          reflection: reflectionData,
-          xp: xp,
-        })
-
-        await saveDailyProgress({
-          step: 'done',
-          task: currentTask,
-          completionStatus: completionStatus,
-          xp: xp,
-          totalXP: newTotalXP,
-          streak: streakData.count,
-        })
-
-        setTotalXP(newTotalXP)
-        setStreak(streakData.count)
-        console.log(`Verdiend: ${xp} XP | Totaal: ${newTotalXP} XP | Streak: ${streakData.count} dagen`)
-        setReflectionVisible(false)
-        setFlow(FLOW.DONE)
-      }}>
-
-      </ReflectionModal>
-      <StatusBar style="auto" />
-    </View>
-  );
+        <StatusBar style="auto" />
+      </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -266,6 +278,62 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 50,
     height: 50,
+    resizeMode: 'contain',
+  },
+  house1: {
+    position: 'absolute',
+    bottom: 120,
+    left: 80,
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
+  },
+  house2: {
+    position: 'absolute',
+    bottom: 120,
+    right: 80,
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
+  },
+  house3: {
+    position: 'absolute',
+    bottom: 200,
+    left: 100,
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
+  },
+  house4: {
+    position: 'absolute',
+    bottom: 200,
+    right: 100,
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
+  },
+  house5: {
+    position: 'absolute',
+    top: 200,
+    left: '45%',
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
+  },
+  human1: {
+    position: 'absolute',
+    bottom: 160,
+    left: '40%',
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  human2: {
+    position: 'absolute',
+    bottom: 160,
+    right: '35%',
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
   },
   fabContainer: {
