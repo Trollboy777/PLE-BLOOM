@@ -44,12 +44,10 @@ export default function ReflectionModal({ visible, completionStatus, onFinish })
                         />
 
                         <TouchableOpacity
-                            style={[styles.confirmButton, (!wentWell || !wentBad || !feeling) && styles.confirmButtonDisabled]}
-                            onPress={() => {
-                                if (wentWell && wentBad && feeling) {
+                            style={styles.confirmButton}
+                            onPress={() =>
                                     onFinish({ wentWell, wentBad, feeling })
-                                }
-                            }}
+                            }
                         >
                             <Text style={styles.buttonText}>Reflectie Afronden ✓</Text>
                         </TouchableOpacity>
