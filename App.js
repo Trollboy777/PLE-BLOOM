@@ -8,6 +8,7 @@ import { saveSession, getDailyProgress, saveDailyProgress, getStreak, updateStre
 import { calculateXP } from "./utills/XpManager";
 import XPBar from "./components/XPBar";
 import { getWorldState } from "./utills/WorldManager";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const FLOW = {
   LOADING: 'loading',
@@ -191,6 +192,44 @@ export default function App() {
           setReflectionVisible(false)
           setFlow(FLOW.DONE)
         }} />
+        <View style={styles.demoPanel}>
+
+          <TouchableOpacity
+              style={styles.demoButton}
+              onPress={async () => {
+                const newTotalXP = await addXP(100)
+                setTotalXP(newTotalXP)
+              }}
+          >
+            <Text style={styles.demoButtonText}>+100 XP</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+              style={styles.demoButton}
+              onPress={() => {
+                setTotalXP(0)
+                console.log('Demo reset uitgevoerd')
+              }}
+          >
+            <Text style={styles.demoButtonText}>Reset XP</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+              style={styles.demoButton}
+              onPress={async () => {
+                await AsyncStorage.removeItem('dailyProgress')
+
+                setCurrentTask(null)
+                setFlow(FLOW.TASK)
+                setModalVisible(true)
+
+                console.log('Nieuwe dag gestart')
+              }}
+          >
+            <Text style={styles.demoButtonText}>Volgende Dag</Text>
+          </TouchableOpacity>
+
+        </View>
 
         <StatusBar style="auto" />
       </View>
@@ -385,6 +424,26 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 6,
     borderWidth: 1,
+  },
+  demoPanel: {
+    position: 'absolute',
+    top: 120,
+    right: 10,
+    gap: 8,
+  },
+
+  demoButton: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#000',
+  },
+
+  demoButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
 
 });
