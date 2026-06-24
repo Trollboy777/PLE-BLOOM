@@ -1,10 +1,18 @@
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native'
 
 export default function ReflectionModal({ visible, completionStatus, onFinish }) {
     const [wentWell, setWentWell] = useState('')
     const [wentBad, setWentBad] = useState('')
     const [feeling, setFeeling] = useState('')
+
+    useEffect(() => {
+        if (visible) {
+            setWentWell('')
+            setWentBad('')
+            setFeeling('')
+        }
+    }, [visible]);
 
     return (
         <Modal visible={visible} transparent={true} animationType="fade">

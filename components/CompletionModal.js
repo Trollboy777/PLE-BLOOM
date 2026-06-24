@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {StyleSheet, Text, View, TouchableOpacity, Modal} from "react-native";
 
 const options = [
@@ -21,6 +21,12 @@ const options = [
 
 export default function CompletionModal ({visible, onConfirm}) {
     const [selected, setSelected] = useState(null)
+
+    useEffect(() => {
+        if (visible) {
+            setSelected(null)
+        }
+    }, [visible])
 
     return (
         <Modal visible={visible} transparent={true} animationType="fade">

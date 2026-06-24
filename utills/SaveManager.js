@@ -8,6 +8,71 @@ const yesterday = () => {
     return d.toISOString().split('T')[0]
 }
 
+export const getDailyTasks = async () => {
+    try {
+        const data = await AsyncStorage.getItem('dailyTasks')
+        if (!data) return []
+        const parsedData = JSON.parse(data)
+        if (parsedData.dateKey !== today()) return []
+        return parsedData.tasks
+    }
+    catch (error) {
+        return []
+    }
+}
+
+export const saveDailyTasks = async (tasks) => {
+    try {
+        await AsyncStorage.setItem('dailyTasks', JSON.stringify(
+            {
+                dateKey: today(),
+                tasks: tasks,
+            }
+        ))
+    }
+    catch (error) {
+        console.error(`Taak opslaan mislukt: `,error)
+    }
+}
+
+export const addDailyTask = async (taskData) => {
+    try {
+        const tasks = await getDailyTasks()
+        const activeTasks = tasks.filter(t => t.status !== 'cancelled')
+        if (activeTasks.length >= 3) {
+            return null
+        }
+        const newTask = {
+            id: Date.now(),
+            task: taskData.task,
+            expectedTime: taskData.expectedTime,
+            status: 'pending',
+            completionStatus: null,
+            reflection: null,
+            xp: 0
+        }
+        const updated = [...tasks, newTask]
+        await saveDailyTasks(updated)
+        return updated
+    }
+    catch (error) {
+        console.error(`Taak toevoegen mislukt: `,error)
+        return null
+    }
+}
+
+export const updateDailyTask = async (taskId, updates) => {
+    try {
+        const tasks = await getDailyTasks()
+        const updated = tasks.map(t => t.id === taskId ? { ...t, ...updates } : t)
+        await saveDailyTasks(updated)
+        return updated
+    } catch (e) {
+        console.error('Taak updaten mislukt:', e)
+        return null
+    }
+}
+
 export const saveSession = async ({ task, expectedTime, completionStatus, reflection, xp }) => {
     try {
         const session = {

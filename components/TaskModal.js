@@ -3,48 +3,66 @@ import {StyleSheet, Text, View, TouchableOpacity, Modal, TextInput, Keyboard} fr
 import { Dropdown } from 'react-native-element-dropdown'
 
 const timeOptions = [15, 30, 45, 60, 75, 90, 120]
-export default function TaskModal({visible, onConfirm}) {
+export default function TaskModal({visible, onConfirm, onClose}) {
     const [taskInput, setTaskInput] = useState('');
     const [selectedTime, setSelectedTime] = useState(null)
 
+    useEffect(() => {
+        if (visible) {
+            setTaskInput('')
+            setSelectedTime(null)
+        }
+    }, [visible])
+
     return (
-        <Modal visible={visible} transparent={true} animationType={"fade"}
-        >
-            <View style={styles.modalOverlay}>
-                <View style={styles.modalBox}>
-                    <Text style={styles.taskQuestion}>
-                        Voer hier de taak in die je vandaag gaat doen</Text>
-                    <Text style={styles.taskLabel}>Taak:</Text>
-                    <TextInput style={styles.taskInput}
-                               placeholder={"Bijv. aan mijn scriptie werken"}
-                               placeholderTextColor={"#aaa"}
-                               value={taskInput}
-                               onChangeText={setTaskInput}
-                    ></TextInput>
-                    <Text style={styles.taskQuestion}>Hoe lang verwacht je bezig te zijn?</Text>
-                    <Text style={styles.taskLabel}>Tijd (in minuten)</Text>
-                    <Dropdown
-                        style={styles.dropdown}
-                        data={timeOptions.map(t => ({ label: `${t} min`, value: t }))}
-                        labelField="label"
-                        valueField="value"
-                        placeholder="Selecteer tijd..."
-                        value={selectedTime}
-                        onChange={(item) => setSelectedTime(item.value)}
-                        dropdownPosition={"top"}
-                        onFocus={() => Keyboard.dismiss()}
-                    />
-                    <TouchableOpacity style={[styles.confirmButton, (!taskInput || !selectedTime) && styles.confirmButtonDisabled
-                    ]} onPress={() => {
-                        if (taskInput && selectedTime) {
-                            onConfirm({task: taskInput, expectedTime: selectedTime})
-                            console.log(taskInput, selectedTime)
-                        }
-                    }}>
-                        <Text style={styles.buttonText}>Start Taak:</Text>
-                    </TouchableOpacity>
-                </View>
-                </View>
+        <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
+            <TouchableOpacity
+                style={styles.modalOverlay}
+                activeOpacity={1}
+                onPress={onClose}
+            >
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={() => {
+                    }}
+                    style={{width: '85%'}}
+                >
+                    <View style={styles.modalBox}>
+                        <Text style={styles.taskQuestion}>Voer hier de taak in die je vandaag gaat doen</Text>
+                        <Text style={styles.taskLabel}>Taak:</Text>
+                        <TextInput
+                            style={styles.taskInput}
+                            placeholder="Bijv. aan mijn scriptie werken"
+                            placeholderTextColor="#aaa"
+                            value={taskInput}
+                            onChangeText={setTaskInput}
+                        />
+                        <Text style={styles.taskQuestion}>Hoe lang verwacht je bezig te zijn?</Text>
+                        <Text style={styles.taskLabel}>Tijd (in minuten)</Text>
+                        <Dropdown
+                            style={styles.dropdown}
+                            data={timeOptions.map(t => ({label: `${t} min`, value: t}))}
+                            labelField="label"
+                            valueField="value"
+                            placeholder="Selecteer tijd..."
+                            value={selectedTime}
+                            onChange={(item) => setSelectedTime(item.value)}
+                            dropdownPosition="top"
+                            onFocus={() => Keyboard.dismiss()}
+                        />
+                        <TouchableOpacity
+                            style={[styles.confirmButton, (!taskInput || !selectedTime) && styles.confirmButtonDisabled]}
+                            onPress={() => {
+                                if (taskInput && selectedTime) {
+                                    onConfirm({task: taskInput, expectedTime: selectedTime})
+                                }
+                            }}
+                        >
+                            <Text style={styles.buttonText}>Start Taak</Text>
+                        </TouchableOpacity>
+                    </View>
+                </TouchableOpacity>
+            </TouchableOpacity>
         </Modal>
     )
 }
@@ -62,7 +80,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'black',
         padding: 24,
-        width: '85%',
+        width: '100%',
         alignItems: 'center',
         gap: 20,
     },

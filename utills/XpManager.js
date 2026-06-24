@@ -40,12 +40,11 @@ export const calculateXP = ({ completionStatus, expectedTime, reflection, streak
         getAnswerXP(reflection?.feeling)
     const streakBonus = getStreakBonus(streak)
     const total = base + timeBonus + reflectionBonus + streakBonus
-    const finalXP = Math.min(total, 100)
 
-    console.log('XP breakdown:', { base, timeBonus, reflectionBonus, streakBonus, total, finalXP })
+    console.log('XP breakdown:', { base, timeBonus, reflectionBonus, streakBonus, total})
 
     return {
-        xp: finalXP,
+        xp: total,
         breakdown: { base, timeBonus, reflectionBonus, streakBonus }
     }
 }
